@@ -9,10 +9,10 @@ public class Main {
 
     public static void main(String[] args){
 
-        Random random = new Random();
+        Deck deck = new Deck();
 
-        HandTotal dealer = new HandTotal();
-        HandTotal player = new HandTotal();
+        Hand dealer = new Hand();
+        Hand player = new Hand();
 
         List<Integer> cards = new ArrayList<>();
 
@@ -26,11 +26,11 @@ public class Main {
 
         System.out.println(cards);
 
-        dealer.addCard(draw(random, cards));
+        dealer.addCard(deck.draw());
         System.out.println("Dealer Value: " + dealer.getTotal());
 
-        player.addCard(draw(random, cards));
-        player.addCard(draw(random, cards));
+        player.addCard(deck.draw());
+        player.addCard(deck.draw());
         System.out.println("Player Value: " + player.getTotal());
 
         System.out.println(" ");
@@ -53,7 +53,7 @@ public class Main {
             if (input.equals("1")){
                 System.out.println("Hit");
 
-                player.addCard(draw(random, cards));
+                player.addCard(deck.draw());
                 System.out.println("Player Value: " + player.getTotal());
 
                 if (player.getTotal() > 21){
@@ -65,12 +65,12 @@ public class Main {
 
                 System.out.println("Stand");
 
-                dealer.addCard(draw(random, cards));
+                dealer.addCard(deck.draw());
                 System.out.println("Dealer Value: " + dealer.getTotal());
 
                 while (dealer.getTotal() < 17){
 
-                    dealer.addCard(draw(random, cards));
+                    dealer.addCard(deck.draw());
                     System.out.println("Dealer Value: " + dealer.getTotal());
                 }
                 if (dealer.getTotal() > 21){
@@ -106,9 +106,5 @@ public class Main {
         } else if (dealer.getTotal() < player.getTotal() && gameOn){
             System.out.println("You win");
         }
-    }
-
-    private static int draw(Random random, List<Integer> cards) {
-        return cards.get(random.nextInt(cards.size()));
     }
 }
