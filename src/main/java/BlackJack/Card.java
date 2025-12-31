@@ -14,6 +14,10 @@ public class Card {
         return rank.getValue();
     }
 
+    public String getOutput(){
+        return rank.getOutput();
+    }
+
     public Rank getRank(){
         return rank;
     }
@@ -24,6 +28,6 @@ public class Card {
 
     @Override
     public String toString(){
-        return rank + "of" + suit;
+        return rank.getOutput() + suit.getOutput();
     }
 }

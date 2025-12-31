@@ -1,8 +1,5 @@
 package BlackJack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -14,24 +11,32 @@ public class Main {
         Hand dealer = new Hand();
         Hand player = new Hand();
 
-        List<Integer> cards = new ArrayList<>();
+        System.out.println("   ");
 
         System.out.println("BlackJack Started");
 
-        int i = 2;
-        while (i < 12) {
-            cards.add(i);
-            i++;
-        }
-
-        System.out.println(cards);
+        System.out.println("   ");
 
         dealer.addCard(deck.draw());
-        System.out.println("Dealer Value: " + dealer.getTotal());
+        dealer.addCard(deck.draw());
+        System.out.println("Dealer shows: " + dealer.getCards().getFirst() + " + [hidden]");
 
         player.addCard(deck.draw());
         player.addCard(deck.draw());
-        System.out.println("Player Value: " + player.getTotal());
+        if (player.isBlackJack()){
+            System.out.println("You have Blackjack");
+            if (dealer.getCards().getFirst().getValue() == 10 || dealer.getCards().getFirst().getValue() == 11){
+                System.out.println("Dealer: " + dealer);
+                if (dealer.isBlackJack()){
+                    System.out.println("It's a push");
+                    return;
+                } else {
+                    System.out.println("You win");
+                    return;
+                }
+            }
+        }
+        System.out.println("Player: " + player);
 
         System.out.println(" ");
         System.out.println("Hit or Stand");
@@ -45,7 +50,7 @@ public class Main {
             System.out.println("1.Hit");
             System.out.println("2.Stand");
             System.out.println("3.Quit");
-            System.out.println("Escolha: ");
+            System.out.println("Choice: ");
 
             String input = scanner.nextLine().trim();
 
@@ -54,7 +59,7 @@ public class Main {
                 System.out.println("Hit");
 
                 player.addCard(deck.draw());
-                System.out.println("Player Value: " + player.getTotal());
+                System.out.println("Player: " + player);
 
                 if (player.getTotal() > 21){
                     System.out.println("You have busted You Lose");
@@ -65,13 +70,12 @@ public class Main {
 
                 System.out.println("Stand");
 
-                dealer.addCard(deck.draw());
-                System.out.println("Dealer Value: " + dealer.getTotal());
+                System.out.println("Dealer: " + dealer);
 
                 while (dealer.getTotal() < 17){
 
                     dealer.addCard(deck.draw());
-                    System.out.println("Dealer Value: " + dealer.getTotal());
+                    System.out.println("Dealer: " + dealer);
                 }
                 if (dealer.getTotal() > 21){
                     gameOn = false;
@@ -92,11 +96,9 @@ public class Main {
         if(gameOn){
             System.out.println("Final");
 
-            System.out.println("Dealer Value: ");
-            System.out.println(dealer.getTotal());
+            System.out.println("Dealer: " + dealer);
 
-            System.out.println("Player Value: ");
-            System.out.println(player.getTotal());
+            System.out.println("Player: " + player);
         }
 
         if (dealer.getTotal() > player.getTotal() && gameOn){
