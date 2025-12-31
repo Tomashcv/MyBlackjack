@@ -11,6 +11,9 @@ public class Main {
 
         Random random = new Random();
 
+        HandTotal dealer = new HandTotal();
+        HandTotal player = new HandTotal();
+
         List<Integer> cards = new ArrayList<>();
 
         System.out.println("BlackJack Started");
@@ -21,23 +24,14 @@ public class Main {
             i++;
         }
 
-        int bound = cards.size();
-
         System.out.println(cards);
 
-        System.out.println("Dealer Value: ");
-        int dealerValue = cards.get(random.nextInt(bound));
-        System.out.println(dealerValue);
+        dealer.addCard(draw(random, cards));
+        System.out.println("Dealer Value: " + dealer.getTotal());
 
-        System.out.println("Player Value: ");
-        int playerValue = cards.get(random.nextInt(bound));
-        playerValue += cards.get(random.nextInt(bound));
-
-        if (playerValue == 22){
-            playerValue = 12;
-        }
-
-        System.out.println(playerValue);
+        player.addCard(draw(random, cards));
+        player.addCard(draw(random, cards));
+        System.out.println("Player Value: " + player.getTotal());
 
         System.out.println(" ");
         System.out.println("Hit or Stand");
@@ -47,6 +41,7 @@ public class Main {
         boolean gameOn = true;
         boolean running = true;
         while (running){
+
             System.out.println("1.Hit");
             System.out.println("2.Stand");
             System.out.println("3.Quit");
@@ -57,25 +52,28 @@ public class Main {
 
             if (input.equals("1")){
                 System.out.println("Hit");
-                playerValue += cards.get(random.nextInt(bound));
-                System.out.println("Player Value: ");
-                System.out.println(playerValue);
-                if (playerValue > 21){
+
+                player.addCard(draw(random, cards));
+                System.out.println("Player Value: " + player.getTotal());
+
+                if (player.getTotal() > 21){
                     System.out.println("You have busted You Lose");
                     gameOn = false;
                     break;
                 }
             } else if (input.equals("2")){
+
                 System.out.println("Stand");
-                dealerValue += cards.get(random.nextInt(bound));
-                System.out.println("Dealer Value: ");
-                System.out.println(dealerValue);
-                while (dealerValue < 17){
-                    dealerValue += cards.get(random.nextInt(bound));
-                    System.out.println("Dealer Value");
-                    System.out.println(dealerValue);
+
+                dealer.addCard(draw(random, cards));
+                System.out.println("Dealer Value: " + dealer.getTotal());
+
+                while (dealer.getTotal() < 17){
+
+                    dealer.addCard(draw(random, cards));
+                    System.out.println("Dealer Value: " + dealer.getTotal());
                 }
-                if (dealerValue > 21){
+                if (dealer.getTotal() > 21){
                     gameOn = false;
                     System.out.println("Dealer has Busted You Win");
                     break;
@@ -95,27 +93,22 @@ public class Main {
             System.out.println("Final");
 
             System.out.println("Dealer Value: ");
-            System.out.println(dealerValue);
+            System.out.println(dealer.getTotal());
 
             System.out.println("Player Value: ");
-            System.out.println(playerValue);
+            System.out.println(player.getTotal());
         }
 
-        if (dealerValue > playerValue && gameOn){
+        if (dealer.getTotal() > player.getTotal() && gameOn){
             System.out.println("You lose");
-        } else if (dealerValue == playerValue && gameOn){
+        } else if (dealer.getTotal() == player.getTotal() && gameOn){
             System.out.println("It's a push");
-        } else if (dealerValue < playerValue && gameOn){
+        } else if (dealer.getTotal() < player.getTotal() && gameOn){
             System.out.println("You win");
         }
     }
 
-    /*public Main(Random random){
-        this.random = random;
+    private static int draw(Random random, List<Integer> cards) {
+        return cards.get(random.nextInt(cards.size()));
     }
-
-    public int getCards(){
-        int number = random.nextInt(10);
-        return number;
-    }*/
 }
