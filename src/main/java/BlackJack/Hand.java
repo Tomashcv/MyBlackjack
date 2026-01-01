@@ -10,7 +10,7 @@ public class Hand {
     private int softAces;
 
     public Hand(){
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<>();
         total = 0;
         softAces = 0;
     }
@@ -34,6 +34,20 @@ public class Hand {
         return total;
     }
 
+    public int cardCount() {
+        return cards.size();
+    }
+
+    public Card getCard(int index){
+        return cards.get(index);
+    }
+
+    public Card removeCard(int index){
+        Card removed = cards.remove(index);
+        reCalculate();
+        return removed;
+    }
+
     public boolean isBlackJack(){
         return total == 21 && cards.size() == 2;
     }
@@ -43,6 +57,25 @@ public class Hand {
     }
 
     public String toString(){
-        return cards.toString() + " (total = " + total + ")";
+        return cards + " (total = " + total + ")";
+    }
+
+    private void reCalculate(){
+        total = 0;
+        softAces = 0;
+
+        for (int i = 0; i < cards.size(); i++){
+            Card c = cards.get(i);
+            total += c.getValue();
+
+            if (c.getRank() == Rank.ACE){
+                softAces += 1;
+            }
+
+            while (total > 21 && softAces > 0){
+                total -= 10;
+                softAces -= 1;
+            }
+        }
     }
 }
