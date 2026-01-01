@@ -1,5 +1,6 @@
 package BlackJack;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -9,107 +10,80 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         boolean appOn = true;
         while (appOn){
-        Deck deck = new Deck();
 
-        Hand dealer = new Hand();
-        Hand player = new Hand();
+            BlackJackRound round = new BlackJackRound();
 
-        System.out.println("   ");
+            boolean firstDecision = true;
 
-        System.out.println("BlackJack Started");
+            round.start();
 
-        System.out.println("   ");
+            System.out.println("   ");
+            System.out.println("BlackJack Started");
+            System.out.println("   ");
 
-        dealer.addCard(deck.draw());
-        dealer.addCard(deck.draw());
-        System.out.println("Dealer shows: " + dealer.getCards().getFirst() + " + [hidden]");
+            System.out.println("Dealer shows: " + round.dealerUpCard() + " + [hidden]");
+            System.out.println("Player: " + round.getPlayer());
+            System.out.println(" ");
 
-        player.addCard(deck.draw());
-        player.addCard(deck.draw());
-        if (player.isBlackJack()){
-            System.out.println("You have Blackjack");
-            if (dealer.getCards().getFirst().getValue() == 10 || dealer.getCards().getFirst().getValue() == 11){
-                System.out.println("Dealer: " + dealer);
-                if (dealer.isBlackJack()){
-                    System.out.println("It's a push");
-                    break;
-                } else {
-                    System.out.println("You win");
-                    break;
-                }
-            }
-        }
-        System.out.println("Player: " + player);
-
-        System.out.println(" ");
-
-
-            boolean gameOn = true;
             boolean running = true;
             while (running){
 
-                System.out.println("Please choose an option {1,2,3,4}");
-                System.out.println("1.Hit");
-                System.out.println("2.Stand");
-                System.out.println("3.Double");
-                System.out.println("4.Quit");
+                Result res = round.getResult();
+                if (res != Result.NOT_FINISHED){
+                    break;
+                }
+
+                if (firstDecision){
+                    System.out.println("Please choose an option {h,s,d,q}");
+                } else {
+                    System.out.println("Please choose an option {h,s,q}");
+                }
+                System.out.println("Hit - h");
+                System.out.println("Stand - s");
+                if (firstDecision){
+                    System.out.println("Double - d");
+                }
+                System.out.println("Quit - q");
                 System.out.println("Choice: ");
 
                 String input = scanner.nextLine().trim();
 
-                if (input.equals("1")){
+                if (input.equals("h")){
+
                     System.out.println("Hit");
+                    round.hit();
+                    System.out.println("Player: " + round.getPlayer());
+                    firstDecision = false;
 
-                    player.addCard(deck.draw());
-                    System.out.println("Player: " + player);
-
-                    if (player.getTotal() > 21){
-                        System.out.println("You have busted You Lose");
-                        gameOn = false;
-                        break;
-                    }
-                } else if (input.equals("2")){
+                } else if (input.equals("s")){
 
                     System.out.println("Stand");
-
-                    System.out.println("Dealer: " + dealer);
-
-                    while (dealer.getTotal() < 17){
-
-                        dealer.addCard(deck.draw());
-                        System.out.println("Dealer: " + dealer);
+                    System.out.println("Dealer: " + round.getDealer());
+                    List<Card> drawn = round.stand();
+                    for (Card c : drawn) {
+                        System.out.println("Dealer draws: " + c + " -> total " + round.getDealer().getTotal());
                     }
-                    if (dealer.getTotal() > 21){
-                        gameOn = false;
-                        System.out.println("Dealer has Busted You Win");
-                        break;
-                    }
-                    break;
-                } else if (input.equals("3")) {
+                    running = false;
+
+                } else if (input.equals("d") && firstDecision) {
+
                     System.out.println("Double");
+                    System.out.println("Dealer: " + round.getDealer());
 
-                    player.addCard(deck.draw());
-                    System.out.println("Player: " + player);
+                    List<Card> drawn = round.DoubleDown();
 
-                    if (player.getTotal() > 21){
-                        System.out.println("You have busted You Lose");
-                        gameOn = false;
-                        break;
-                    } else {
-                        while (dealer.getTotal() < 17){
-                            dealer.addCard(deck.draw());
-                            System.out.println("Dealer: " + dealer);
-                        }
-                        if (dealer.getTotal() > 21){
-                            gameOn = false;
-                            System.out.println("Dealer has Busted You Win");
-                            break;
-                        }
-                        break;
+                    System.out.println("Player: " + round.getPlayer());
+
+                    for (Card c : drawn) {
+                        System.out.println("Dealer draws: " + c + " -> total " + round.getDealer().getTotal());
                     }
-                } else if (input.equals("4")){
+                    running = false;
+
+                } else if (input.equals("d")){
+                    System.out.println("Double its only allowed in the first decision");
+                }
+                else if (input.equals("q")){
                     System.out.println("Quitting...");
-                    gameOn = false;
                     running = false;
                     appOn = false;
                 } else {
@@ -117,27 +91,46 @@ public class Main {
                 }
             }
 
-            if(gameOn){
-                System.out.println("Final");
+            Result finalRes = round.getResult();
 
-                System.out.println("Dealer: " + dealer);
+            System.out.println("Final");
+            System.out.println("Dealer: " + round.getDealer());
+            System.out.println("Player: " + round.getPlayer());
 
-                System.out.println("Player: " + player);
-            }
-
-            if (dealer.getTotal() > player.getTotal() && gameOn){
-                System.out.println("You lose");
-            } else if (dealer.getTotal() == player.getTotal() && gameOn){
-                System.out.println("It's a push");
-            } else if (dealer.getTotal() < player.getTotal() && gameOn){
+            if (finalRes == Result.PLAYER_BUST) {
+                System.out.println("You have busted. You lose");
+            } else if (finalRes == Result.DEALER_BUST) {
+                System.out.println("Dealer has busted. You win");
+            } else if (finalRes == Result.PLAYER_BLACKJACK) {
+                System.out.println("You have Blackjack! You win");
+            } else if (finalRes == Result.PLAYER_WIN) {
                 System.out.println("You win");
+            } else if (finalRes == Result.DEALER_WIN) {
+                System.out.println("You lose");
+            } else if (finalRes == Result.PUSH) {
+                System.out.println("It's a push");
+            } else {
+                System.out.println("Round ended");
             }
 
-            System.out.println("   ");
-            System.out.println("   ");
-            System.out.println("   ");
-            System.out.println("New Game");
-            System.out.println("   ");
+            System.out.println("Do you Want to play another Round[yes/no]?");
+            String input = scanner.nextLine().trim();
+
+            if (input.equals("yes")){
+
+                System.out.println("   ");
+                System.out.println("   ");
+                System.out.println("   ");
+                System.out.println("New Game");
+                System.out.println("   ");
+
+            } else if (input.equals("no")){
+                System.out.println("Quitting...");
+                appOn = false;
+            } else {
+                System.out.println("Invalid Option");
+            }
+
         }
         scanner.close();
     }

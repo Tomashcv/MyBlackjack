@@ -1,5 +1,8 @@
 package BlackJack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BlackJackRound {
 
     private Deck deck;
@@ -39,15 +42,13 @@ public class BlackJackRound {
         }
     }
 
-    public void stand(){
-        dealerPlay();
-        roundOver = true;
+    public List<Card> stand(){
+        return dealerPlay();
     }
 
-    public void DoubleDown(){
+    public List<Card> DoubleDown(){
         player.addCard(deck.draw());
-        dealerPlay();
-        roundOver = true;
+        return dealerPlay();
     }
 
     public Result getResult(){
@@ -78,9 +79,16 @@ public class BlackJackRound {
         return Result.PUSH;
     }
 
-    private void dealerPlay() {
+    private List<Card> dealerPlay(){
+        List<Card> dealerCards = new ArrayList<>();
+
         while (dealer.getTotal() < 17){
-            dealer.addCard(deck.draw());
+            Card c = deck.draw();
+            dealer.addCard(c);
+            dealerCards.add(c);
         }
+
+        roundOver = true;
+        return dealerCards;
     }
 }
