@@ -42,27 +42,29 @@ public class BlackJackRound {
         }
     }
 
-    public List<Card> stand(){
+    public List<BlackJackRound.DealerDraw> stand(){
         return dealerPlay();
     }
 
-    public List<Card> DoubleDown(){
+    public List<BlackJackRound.DealerDraw> DoubleDown(){
         player.addCard(deck.draw());
         return dealerPlay();
     }
 
     public Result getResult(){
         if (!roundOver){
-            if (player.isBlackJack()){
-                if (dealer.getCards().getFirst().getValue() == 10 || dealer.getCards().getFirst().getValue() == 11){
-                    if (dealer.isBlackJack()){
-                        return Result.PUSH;
-                    }
-                    return Result.PLAYER_BLACKJACK;
+            if (player.isBlackJack()) {
+
+                Card up = dealer.getCards().getFirst();
+                boolean dealerMayHaveBJ = (up.getValue() == 10 || up.getValue() == 11);
+
+                if (dealerMayHaveBJ && dealer.isBlackJack()) {
+                    return Result.PUSH;
                 }
-            } else {
-                return Result.NOT_FINISHED;
+
+                return Result.PLAYER_BLACKJACK;
             }
+            return Result.NOT_FINISHED;
         }
         if (player.getTotal() > 21){
             return Result.PLAYER_BUST;
@@ -79,13 +81,32 @@ public class BlackJackRound {
         return Result.PUSH;
     }
 
-    private List<Card> dealerPlay(){
-        List<Card> dealerCards = new ArrayList<>();
+    public static class DealerDraw {
+        private final Card card;
+        private final int totalAfter;
 
-        while (dealer.getTotal() < 17){
+        public DealerDraw(Card card, int totalAfter) {
+            this.card = card;
+            this.totalAfter = totalAfter;
+        }
+
+        public Card getCard() {
+            return card;
+        }
+
+        public int getTotalAfter() {
+            return totalAfter;
+        }
+    }
+
+
+    private List<DealerDraw> dealerPlay() {
+        List<DealerDraw> dealerCards = new ArrayList<>();
+
+        while (dealer.getTotal() < 17) {
             Card c = deck.draw();
             dealer.addCard(c);
-            dealerCards.add(c);
+            dealerCards.add(new DealerDraw(c, dealer.getTotal()));
         }
 
         roundOver = true;

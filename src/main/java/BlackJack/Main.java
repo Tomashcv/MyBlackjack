@@ -59,23 +59,25 @@ public class Main {
 
                     System.out.println("Stand");
                     System.out.println("Dealer: " + round.getDealer());
-                    List<Card> drawn = round.stand();
-                    for (Card c : drawn) {
-                        System.out.println("Dealer draws: " + c + " -> total " + round.getDealer().getTotal());
+                    List<BlackJackRound.DealerDraw> drawn = round.stand();
+                    for (BlackJackRound.DealerDraw c : drawn) {
+                        try { Thread.sleep(500); } catch (InterruptedException ex) { }
+                        System.out.println("Dealer draws: " + c.getCard() + " -> total " + c.getTotalAfter());
                     }
                     running = false;
 
                 } else if (input.equals("d") && firstDecision) {
 
                     System.out.println("Double");
+                    System.out.println("Player: " + round.getPlayer());
                     System.out.println("Dealer: " + round.getDealer());
 
-                    List<Card> drawn = round.DoubleDown();
+                    List<BlackJackRound.DealerDraw> drawn = round.DoubleDown();
 
-                    System.out.println("Player: " + round.getPlayer());
 
-                    for (Card c : drawn) {
-                        System.out.println("Dealer draws: " + c + " -> total " + round.getDealer().getTotal());
+                    for (BlackJackRound.DealerDraw c : drawn) {
+                        try { Thread.sleep(500); } catch (InterruptedException ex) { }
+                        System.out.println("Dealer draws: " + c.getCard() + " -> total " + c.getTotalAfter());
                     }
                     running = false;
 
